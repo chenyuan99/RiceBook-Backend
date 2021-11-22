@@ -177,10 +177,10 @@ const getProfile = (req, res) => {
         res.status(200).send({
             username: username,
             dob: profileObj.dob,
-            avatar: profiles[0].avatar,
-            zipcode: profiles[0].zipcode,
-            email: profiles[0].email,
-            headline: profiles[0].headline
+            avatar:profileObj.avatar,
+            zipcode: profileObj.zipcode,
+            email: profileObj.email,
+            headline: profileObj.headline
         })
 
     })
