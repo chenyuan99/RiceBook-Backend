@@ -160,6 +160,10 @@ const getDob = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.params.user
     Profiles.find({username: username}, function (err, profiles) {
+        if (profiles.length == 0) {
+            res.status(400).send("User not found in the database")
+            return
+        }
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
@@ -173,13 +177,16 @@ const getProfile = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.params.user
     Profiles.find({username: username}, function (err, profiles) {
-
-    // const profiles = Profiles.find({username: username});
+        if (profiles.length == 0) {
+            res.status(400).send("User not found in the database")
+            return
+        }
+        // const profiles = Profiles.find({username: username});
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
             dob: profiles[0].dob,
-            avatar:profiles[0].avatar,
+            avatar: profiles[0].avatar,
             zipcode: profiles[0].zipcode,
             email: profiles[0].email,
             headline: profiles[0].headline
