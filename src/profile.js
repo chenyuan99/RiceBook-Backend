@@ -169,22 +169,22 @@ const getDob = (req, res) => {
     })
 }
 
-const getProfile = (req, res) => {
-    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    let username = req.params.user
-    Profiles.find({username: username}, function (err, profiles) {
-        const profileObj = profiles[0];
-        res.status(200).send({
-            username: username,
-            dob: profiles[0].dob,
-            avatar:profiles[0].avatar,
-            zipcode: profiles[0].zipcode,
-            email: profiles[0].email,
-            headline: profiles[0].headline
-        })
-
-    })
-}
+// const getProfile = (req, res) => {
+//     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+//     let username = req.params.user
+//     Profiles.find({username: username}, function (err, profiles) {
+//         const profileObj = profiles[0];
+//         res.status(200).send({
+//             username: username,
+//             dob: profiles[0].dob,
+//             avatar:profiles[0].avatar,
+//             zipcode: profiles[0].zipcode,
+//             email: profiles[0].email,
+//             headline: profiles[0].headline
+//         })
+//
+//     })
+// }
 
 const index = (req, res) => {
     // console.log(req.params.user)
@@ -202,5 +202,5 @@ module.exports = (app) => {
     app.get('/zipcode/:user?', getZipcode);
     app.put('/avatar', putAvatar);
     app.get('/avatar/:user?', getAvatar);
-    app.get('/profile/:user?', getProfile);
+    // app.get('/profile/:user?', getProfile);
 }
