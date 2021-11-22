@@ -173,6 +173,8 @@ const getProfile = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.params.user
     Profiles.find({username: username}, function (err, profiles) {
+
+    // const profiles = Profiles.find({username: username});
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
