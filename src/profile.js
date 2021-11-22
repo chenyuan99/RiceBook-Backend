@@ -169,6 +169,19 @@ const getDob = (req, res) => {
     })
 }
 
+const getProfile = (req, res) => {
+    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+    let username = req.params.user
+    Profiles.find({username: username}, function (err, profiles) {
+        const profileObj = profiles[0];
+        res.status(200).send({
+            username: username,
+            profile:  JSON.stringify(profileObj)
+        })
+
+    })
+}
+
 const index = (req, res) => {
     // console.log(req.params.user)
     res.send({hello: 'world'})
@@ -185,4 +198,5 @@ module.exports = (app) => {
     app.get('/zipcode/:user?', getZipcode);
     app.put('/avatar', putAvatar);
     app.get('/avatar/:user?', getAvatar);
+    app.get('/profile/:user?', getProfile);
 }
