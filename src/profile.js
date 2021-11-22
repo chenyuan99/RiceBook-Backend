@@ -163,7 +163,7 @@ const getDob = (req, res) => {
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
-            dob: profileObj.dob
+            dob: profileObj.dob,
         })
 
     })
@@ -176,7 +176,11 @@ const getProfile = (req, res) => {
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
-            profile:  JSON.stringify(profileObj)
+            dob: profileObj.dob,
+            avatar: profiles[0].avatar,
+            zipcode: profiles[0].zipcode,
+            email: profiles[0].email,
+            headline: profiles[0].headline
         })
 
     })
