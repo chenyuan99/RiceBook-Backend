@@ -176,11 +176,11 @@ const getProfile = (req, res) => {
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
-            dob: profileObj.dob,
-            avatar:profileObj.avatar,
-            zipcode: profileObj.zipcode,
-            email: profileObj.email,
-            headline: profileObj.headline
+            dob: profiles[0].dob,
+            avatar:profiles[0].avatar,
+            zipcode: profiles[0].zipcode,
+            email: profiles[0].email,
+            headline: profiles[0].headline
         })
 
     })
