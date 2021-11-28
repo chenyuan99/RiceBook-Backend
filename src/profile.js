@@ -10,6 +10,9 @@ const profile = {
     avatar: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/DWLeebron.jpg/220px-DWLeebron.jpg',
 }
 
+const uploadImage = require('./uploadCloudinary')
+
+
 const getHeadline = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     const username = req.params.user
@@ -120,41 +123,41 @@ const putZipcode = (req, res) => {
         })
 }
 
-const getAvatar = (req, res) => {
-    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    let username = req.params.user
-    Profiles.find({username: username}, function (err, profiles) {
-        if (profiles.length == 0) {
-            res.status(400).send("user not found")
-            return
-        }
-        res.status(200).send({
-            username: username,
-            avatar: profiles[0].avatar
-        })
-    })
-}
+// const getAvatar = (req, res) => {
+//     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+//     let username = req.params.user
+//     Profiles.find({username: username}, function (err, profiles) {
+//         if (profiles.length == 0) {
+//             res.status(400).send("user not found")
+//             return
+//         }
+//         res.status(200).send({
+//             username: username,
+//             avatar: profiles[0].avatar
+//         })
+//     })
+// }
 
 
-const putAvatar = (req, res) => {
-    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    const username = req.username
-    const newAvatar = req.fileurl
-    if (!newAvatar) {
-        res.status(400).send('avatar missing')
-    }
-    Profiles.updateMany(
-        {username: username},
-        {$set: {avatar: newAvatar}},
-        {new: true},
-        function (err, profiles) {
-            res.status(200).send({
-                username: username,
-                avatar: newAvatar
-            })
-        })
-
-}
+// const putAvatar = (req, res) => {
+//     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+//     const username = req.username
+//     const newAvatar = req.fileurl
+//     if (!newAvatar) {
+//         res.status(400).send('avatar missing')
+//     }
+//     Profiles.updateMany(
+//         {username: username},
+//         {$set: {avatar: newAvatar}},
+//         {new: true},
+//         function (err, profiles) {
+//             res.status(200).send({
+//                 username: username,
+//                 avatar: newAvatar
+//             })
+//         })
+//
+// }
 
 const getDob = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -195,13 +198,59 @@ const getProfile = (req, res) => {
     })
 }
 
-const index = (req, res) => {
-    // console.log(req.params.user)
-    res.send({hello: 'world'})
+const getAvatar = (req, res) => {
+    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+    var users;
+    if (req.params.user != null) {
+        users = req.params.user.split(',')
+    } else {
+        users = [req.username];
+    }
+
+
+    Profiles.find({username :{$in: users}}).exec(function(err, profiles){
+        var avatars = []
+
+        if (profiles.length == 0) {
+            res.status(400).send("none user is supplied in the database")
+            return
+        }
+
+
+
+        profiles.forEach(r => {
+            avatars.push({
+                username : r.username,
+                avatar: r.avatar
+            })
+        })
+        res.status(200).send({avatars:avatars})
+    })
+}
+
+const putAvatar = (req, res) =>  {
+    const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+    const username = req.username
+    const newAvatar = req.fileurl
+
+    if (!newAvatar ) {
+        res.status(400).send('New avatar is not supplied')
+    }
+
+    Profiles.updateMany(
+        {username: username},
+        { $set: { avatar: newAvatar}},
+        { new: true },
+        function(err, profiles){
+            res.status(200).send({
+                username: username,
+                avatar: newAvatar
+            })
+        })
+
 }
 
 module.exports = (app) => {
-    app.get('/', index);
     app.put('/headline', putHeadline);
     app.get('/headline/:user?', getHeadline);
     app.put('/email', putEmail);
@@ -209,7 +258,8 @@ module.exports = (app) => {
     app.get('/dob/:user?', getDob);
     app.put('/zipcode', putZipcode);
     app.get('/zipcode/:user?', getZipcode);
-    app.put('/avatar', putAvatar);
+    // app.put('/avatar', putAvatar);
+    app.put('/avatar',uploadImage('newAvatar'), putAvatar);
     app.get('/avatar/:user?', getAvatar);
     app.get('/profile/:user?', getProfile);
 }
