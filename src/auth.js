@@ -274,6 +274,7 @@ const unlinking = (req, res) => {
 
 module.exports = (app) => {
     app.use(cookieParser());
+    app.use(cors({origin : "http://localhost:4200"}));
     app.get('/', index);
     app.post('/register', register);
     app.post('/login', login);
