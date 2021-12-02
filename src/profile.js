@@ -208,7 +208,7 @@ const getAvatar = (req, res) => {
     }
 
 
-    Profiles.find({username :{$in: users}}).exec(function(err, profiles){
+    Profiles.find({username: {$in: users}}).exec(function (err, profiles) {
         var avatars = []
 
         if (profiles.length == 0) {
@@ -217,37 +217,38 @@ const getAvatar = (req, res) => {
         }
 
 
-
         profiles.forEach(r => {
             avatars.push({
-                username : r.username,
+                username: r.username,
                 avatar: r.avatar
             })
         })
-        res.status(200).send({avatars:avatars})
+        res.status(200).send({avatars: avatars})
     })
 }
 
-const putAvatar = (req, res) =>  {
+const putAvatar = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     const username = req.username
-    const newAvatar = req.fileurl
-
-    if (!newAvatar ) {
-        res.status(400).send('New avatar is not supplied')
+    const avatar = req.fileurl
+    if(!avatar){
+        res.status(400).send("You do not supply avatar!")
     }
-
-    Profiles.updateMany(
-        {username: username},
-        { $set: { avatar: newAvatar}},
-        { new: true },
-        function(err, profiles){
-            res.status(200).send({
-                username: username,
-                avatar: newAvatar
-            })
+    else{
+        Profiles.findOneAndUpdate({username},{avatar},{new:true},(err,item)=>{
+            if(err){
+                res.status(404).send({error:err})
+            }
+            else{
+                if(item){
+                    res.status(200).send({username, avatar:item.avatar})
+                }
+                else{
+                    res.status(404).send({result:'No matched items!'})
+                }
+            }
         })
-
+    }
 }
 
 module.exports = (app) => {
@@ -259,7 +260,7 @@ module.exports = (app) => {
     app.put('/zipcode', putZipcode);
     app.get('/zipcode/:user?', getZipcode);
     // app.put('/avatar', putAvatar);
-    app.put('/avatar',uploadImage('newAvatar'), putAvatar);
+    app.put('/avatar', uploadImage('exampleFormControlFile1'), putAvatar);
     app.get('/avatar/:user?', getAvatar);
     app.get('/profile/:user?', getProfile);
 }
