@@ -62,7 +62,7 @@ function login(req, res) {
         } else {
             const sessionKey = md5(mySecretMessage + new Date().getTime() + userObj.username)
             client.hmset(sessionKey, "username", username)
-            res.cookie(cookieKey, sessionKey, {maxAge: 3600 * 1000, httpOnly: true,sameSite: none})
+            res.cookie(cookieKey, sessionKey, {maxAge: 3600 * 1000, httpOnly: true})
             const msg = {username: username, result: 'success'}
             res.send(msg)
         }
