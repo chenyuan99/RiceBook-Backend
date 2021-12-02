@@ -2,7 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 let middleware = (req, res, next) => {
-     res.header('Access-Control-Allow-Origin',req.headers.origin)
+     // res.header('Access-Control-Allow-Origin',req.headers.origin)
+     res.header('Access-Control-Allow-Origin',req.headers.origin || "http://localhost:4200")
      res.header("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Request-With, X-Session-Id");
      res.header('Access-Control-Allow-Methods','GET,PUT,POST,DELETE')
      res.header('Access-Control-Allow-Credentials',true)

@@ -62,7 +62,7 @@ function login(req, res) {
         } else {
             const sessionKey = md5(mySecretMessage + new Date().getTime() + userObj.username)
             client.hmset(sessionKey, "username", username)
-            res.cookie(cookieKey, sessionKey, {maxAge: 3600 * 1000, httpOnly: true,sameSite: none, secure: true})
+            res.cookie(cookieKey, sessionKey, {maxAge: 3600 * 1000, httpOnly: true})
             const msg = {username: username, result: 'success'}
             res.send(msg)
         }
@@ -271,14 +271,10 @@ const unlinking = (req, res) => {
     })
 }
 
-    // , "https://yc149-final-frontend.surge.sh:443"
+
 module.exports = (app) => {
     app.use(cookieParser());
-    app.use(cors({
-        origin: "http://localhost:4200"
-        ,
-        credentials: true
-    }));
+    app.use(cors({origin : "http://localhost:4200"}));
     app.get('/', index);
     app.post('/register', register);
     app.post('/login', login);
