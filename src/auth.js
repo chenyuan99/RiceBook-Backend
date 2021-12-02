@@ -144,7 +144,7 @@ const index = (req, res) => {
 }
 
 const corsOptions = {
-    origin: 'http://localhost:4200', credentials: true, cookie: {
+    origin: ['http://localhost:4200','https://yc149-final-frontend.surge.sh/'], credentials: true, cookie: {
         sameSite: 'none',
         secure: true
     },
@@ -282,7 +282,7 @@ const unlinking = (req, res) => {
 
 module.exports = (app) => {
     app.use(cookieParser());
-    app.use(cors({origin: "http://localhost:4200"}));
+    app.use(cors({origin: ["http://localhost:4200",'https://yc149-final-frontend.surge.sh/']}));
     app.get('/', index);
     app.post('/register', register);
     app.post('/login', login);
