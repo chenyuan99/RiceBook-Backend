@@ -271,11 +271,11 @@ const unlinking = (req, res) => {
     })
 }
 
-
+    // , "https://yc149-final-frontend.surge.sh:443"
 module.exports = (app) => {
     app.use(cookieParser());
     app.use(cors({
-        origin: ["http://localhost:4200", "https://yc149-final-frontend.surge.sh:443"]
+        origin: "http://localhost:4200"
         ,
         credentials: true
     }));
