@@ -177,7 +177,7 @@ passport.use(new GoogleStrategy({
             clientSecret: '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',
             callbackURL: "/auth/google/callback"
         },
-        function (accessToken, refreshToken, profile, done) {
+        function (req, accessToken, refreshToken, profile, done) {
             // let user = {
             //     'email': profile.emails[0].value,
             //     'name': profile.name.givenName + ' ' + profile.name.familyName,
