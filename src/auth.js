@@ -290,7 +290,7 @@ module.exports = (app) => {
     app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login']})); // could have a passport auth second arg {scope: 'email'}
     app.get('/auth/google/callback',
         passport.authenticate('google', {
-            successRedirect: 'http://localhost:4200/main',
+            successRedirect: 'https://yc149-final-frontend.surge.sh/main',
             failureRedirect: '/'
         }));
     app.use(isLoggedIn);
