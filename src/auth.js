@@ -193,7 +193,7 @@ passport.use(new GoogleStrategy({
             //     if (err) { return done(err); }
             //     done(null, user);
             // });
-
+            const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             const username = profile.name.givenName + "@" + "Google"
             const sid = req.cookies[cookieKey]
             if (!sid) {
