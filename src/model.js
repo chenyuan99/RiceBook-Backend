@@ -33,7 +33,9 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Username required']
     },
     salt: String,
-    hash: String
+    hash: String,
+    third_party_id : String,
+    auth: []
 })
 
 const profilesSchema = new mongoose.Schema({

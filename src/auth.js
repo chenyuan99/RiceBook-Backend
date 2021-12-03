@@ -144,7 +144,7 @@ const index = (req, res) => {
 }
 
 const corsOptions = {
-    origin: ['http://localhost:4200','https://yc149-final-frontend.surge.sh/'], credentials: true, cookie: {
+    origin: ['http://localhost:4200', 'https://yc149-final-frontend.surge.sh/'], credentials: true, cookie: {
         sameSite: 'none',
         secure: true
     },
@@ -179,20 +179,90 @@ passport.use(new GoogleStrategy({
         },
         function (accessToken, refreshToken, profile, done) {
             let user = {
-                /*'email': profile.emails[0].value,
-                'name' : profile.name.givenName + ' ' + profile.name.familyName,
-                'id'   : profile.id,*/
+                'email': profile.emails[0].value,
+                'name': profile.name.givenName + ' ' + profile.name.familyName,
+                'id': profile.id,
                 'token': accessToken
             };
             // You can perform any necessary actions with your user at this point,
             // e.g. internal verification against a users table,
             // creating new user entries, etc.
 
-            return done(null, user);
+            // return done(null, user);
             // User.findOrCreate(..., function(err, user) {
             //     if (err) { return done(err); }
             //     done(null, user);
             // });
+
+            const username = profile.name.givenName + "@" + "Google"
+            const sid = req.cookies[cookieKey]
+            if (!sid) {
+                User.findOne({username: username}).exec(function (err, user) {
+                    if (!user || user.length == 0) {
+                        const userObj = new User({username: username, third_party_id: profile.id})
+                        new User(userObj).save(function (err, usr) {
+                            if (err) {
+                                return console.log(err)
+                            }
+                        })
+                        const profileObj = new Profiles({
+                            username: username,
+                            headline: "I am login in via Google",
+                            following: [],
+                            email: null,
+                            zipcode: null,
+                            dob: new Date(19990, 1, 1).getTime(),
+                            avatar: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+                        })
+                        new Profiles(profileObj).save(function (err, usr) {
+                            if (err) {
+                                return console.log(err)
+                            }
+                        })
+                    }
+                    return done(null, profile)
+                })
+            } else {
+                redis.hgetall(sid, function (err, userObj) {
+                        const cur_user = userObj.username
+                        Article.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
+                        })
+                        Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
+                            new: true,
+                            multi: true
+                        }, function () {
+                        })
+                        Comment.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
+                        })
+
+                        Profiles.findOne({username: username}).exec(function (err, profiles) {
+                            if (profiles) {
+                                Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
+                                    if (newProfile) {
+                                        const newFollowings = newProfile.following.concat(profiles.following)
+                                        Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
+                                        })
+                                    }
+                                })
+                                Profiles.update({username: username}, {$set: {'following': []}}, function () {
+                                })
+                            }
+                        })
+                        User.findOne({username: cur_user}).exec(function (err, user) {
+                            if (user) {
+                                let authObj = {}
+                                authObj[`Google`] = profile.name.givenName
+                                User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
+                                })
+                            }
+                        })
+
+                    }
+                )
+                return done(null, profile)
+            }
+
+
         })
 );
 
@@ -254,8 +324,8 @@ const link2gg = (req, res) => {
                 if (user) {
                     const usr = req.username.split('@');
                     const authObj = {}
-                    authObj[`Facebook`] = usr[0]
-                    User.update({username: username}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
+                    authObj[`Google`] = usr[0]
+                    User.updateMany({username: username}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
                     })
                 }
             })
@@ -279,10 +349,20 @@ const unlinking = (req, res) => {
     })
 }
 
+passport.serializeUser(function (user, done) {
+    done(null, user.id)
+})
+
+passport.deserializeUser(function (id, done) {
+    User.findOne({authId: id}).exec(function (err, user) {
+        done(null, user)
+    })
+})
+
 
 module.exports = (app) => {
     app.use(cookieParser());
-    app.use(cors({origin: ["http://localhost:4200",'https://yc149-final-frontend.surge.sh/']}));
+    app.use(cors({origin: ["http://localhost:4200", 'https://yc149-final-frontend.surge.sh/']}));
     app.get('/', index);
     app.post('/register', register);
     app.post('/login', login);
