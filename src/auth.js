@@ -177,7 +177,7 @@ passport.use(new GoogleStrategy({
             clientSecret: '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',
             callbackURL: "/auth/google/callback"
         },
-        function (req, accessToken, refreshToken, profile, done) {
+        function (accessToken, refreshToken, profile, done) {
             // let user = {
             //     'email': profile.emails[0].value,
             //     'name': profile.name.givenName + ' ' + profile.name.familyName,
@@ -195,8 +195,8 @@ passport.use(new GoogleStrategy({
             // });
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             const username = profile.name.givenName + "@" + "Google"
-            const sid = req.cookies[cookieKey]
-            if (!sid) {
+            // const sid = req.cookies[cookieKey]
+            // if (!sid) {
                 User.findOne({username: username}).exec(function (err, user) {
                     if (!user || user.length == 0) {
                         const userObj = new User({username: username, third_party_id: profile.id})
@@ -222,45 +222,45 @@ passport.use(new GoogleStrategy({
                     }
                     return done(null, profile)
                 })
-            } else {
-                redis.hgetall(sid, function (err, userObj) {
-                        const cur_user = userObj.username
-                        Article.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
-                        })
-                        Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
-                            new: true,
-                            multi: true
-                        }, function () {
-                        })
-                        Comment.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
-                        })
-
-                        Profiles.findOne({username: username}).exec(function (err, profiles) {
-                            if (profiles) {
-                                Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
-                                    if (newProfile) {
-                                        const newFollowings = newProfile.following.concat(profiles.following)
-                                        Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
-                                        })
-                                    }
-                                })
-                                Profiles.update({username: username}, {$set: {'following': []}}, function () {
-                                })
-                            }
-                        })
-                        User.findOne({username: cur_user}).exec(function (err, user) {
-                            if (user) {
-                                let authObj = {}
-                                authObj[`Google`] = profile.name.givenName
-                                User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
-                                })
-                            }
-                        })
-
-                    }
-                )
+            // } else {
+            //     redis.hgetall(sid, function (err, userObj) {
+            //             const cur_user = userObj.username
+            //             Article.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
+            //             })
+            //             Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
+            //                 new: true,
+            //                 multi: true
+            //             }, function () {
+            //             })
+            //             Comment.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
+            //             })
+            //
+            //             Profiles.findOne({username: username}).exec(function (err, profiles) {
+            //                 if (profiles) {
+            //                     Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
+            //                         if (newProfile) {
+            //                             const newFollowings = newProfile.following.concat(profiles.following)
+            //                             Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
+            //                             })
+            //                         }
+            //                     })
+            //                     Profiles.update({username: username}, {$set: {'following': []}}, function () {
+            //                     })
+            //                 }
+            //             })
+            //             User.findOne({username: cur_user}).exec(function (err, user) {
+            //                 if (user) {
+            //                     let authObj = {}
+            //                     authObj[`Google`] = profile.name.givenName
+            //                     User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
+            //                     })
+            //                 }
+            //             })
+            //
+            //         }
+            //     )
                 return done(null, profile)
-            }
+            // }
 
 
         })
