@@ -1,21 +1,15 @@
 const Profiles = require('./model.js').Profiles
 const mongoose = require("mongoose");
 const connectionString = 'mongodb+srv://yc149:Lovelife098!@cluster0.hqe6q.mongodb.net/social?retryWrites=true&w=majority';
-const profile = {
-    username: 'DLeebron',
-    headline: 'This is my headline!',
-    email: 'foo@bar.com',
-    zipcode: 12345,
-    dob: '128999122000',
-    avatar: 'https://upload.wikimedia.org/wikipedia/en/thumb/4/4e/DWLeebron.jpg/220px-DWLeebron.jpg',
-}
-
 const uploadImage = require('./uploadCloudinary')
-
 
 const getHeadline = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    const username = req.params.user
+    let username = req.params.user
+    console.log(username)
+    if (username === "" || username === "undefined" || username === null) {
+        username = req.username;
+    }
     Profiles.find({username: username}, function (err, profiles) {
         if (profiles.length === 0) {
             res.status(400).send("users missing")
@@ -53,7 +47,7 @@ const putHeadline = (req, res) => {
 const getEmail = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     const username = req.params.user
-    if(username === ""){
+    if (username === "") {
         uusername = req.username;
     }
     // console.log(username)
@@ -126,41 +120,6 @@ const putZipcode = (req, res) => {
         })
 }
 
-// const getAvatar = (req, res) => {
-//     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-//     let username = req.params.user
-//     Profiles.find({username: username}, function (err, profiles) {
-//         if (profiles.length == 0) {
-//             res.status(400).send("user not found")
-//             return
-//         }
-//         res.status(200).send({
-//             username: username,
-//             avatar: profiles[0].avatar
-//         })
-//     })
-// }
-
-
-// const putAvatar = (req, res) => {
-//     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-//     const username = req.username
-//     const newAvatar = req.fileurl
-//     if (!newAvatar) {
-//         res.status(400).send('avatar missing')
-//     }
-//     Profiles.updateMany(
-//         {username: username},
-//         {$set: {avatar: newAvatar}},
-//         {new: true},
-//         function (err, profiles) {
-//             res.status(200).send({
-//                 username: username,
-//                 avatar: newAvatar
-//             })
-//         })
-//
-// }
 
 const getDob = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
@@ -181,13 +140,13 @@ const getDob = (req, res) => {
 
 const getProfile = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    let username = req.params.user
+    let username = req.username;
+    console.log(username)
     Profiles.find({username: username}, function (err, profiles) {
-        if (profiles.length == 0) {
+        if (profiles.length === 0) {
             res.status(400).send("User not found in the database")
             return
         }
-        // const profiles = Profiles.find({username: username});
         const profileObj = profiles[0];
         res.status(200).send({
             username: username,
@@ -204,7 +163,7 @@ const getProfile = (req, res) => {
 const getAvatar = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     var users;
-    if (req.params.user != null) {
+    if (req.params.user != null && req.params.user != "") {
         users = req.params.user.split(',')
     } else {
         users = [req.username];
@@ -234,20 +193,17 @@ const putAvatar = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     const username = req.username
     const avatar = req.fileurl
-    if(!avatar){
+    if (!avatar) {
         res.status(400).send("You do not supply avatar!")
-    }
-    else{
-        Profiles.findOneAndUpdate({username},{avatar},{new:true},(err,item)=>{
-            if(err){
-                res.status(404).send({error:err})
-            }
-            else{
-                if(item){
-                    res.status(200).send({username, avatar:item.avatar})
-                }
-                else{
-                    res.status(404).send({result:'No matched items!'})
+    } else {
+        Profiles.findOneAndUpdate({username}, {avatar}, {new: true}, (err, item) => {
+            if (err) {
+                res.status(404).send({error: err})
+            } else {
+                if (item) {
+                    res.status(200).send({username, avatar: item.avatar})
+                } else {
+                    res.status(404).send({result: 'No matched items!'})
                 }
             }
         })
@@ -262,7 +218,6 @@ module.exports = (app) => {
     app.get('/dob/:user?', getDob);
     app.put('/zipcode', putZipcode);
     app.get('/zipcode/:user?', getZipcode);
-    // app.put('/avatar', putAvatar);
     app.put('/avatar', uploadImage('exampleFormControlFile1'), putAvatar);
     app.get('/avatar/:user?', getAvatar);
     app.get('/profile/:user?', getProfile);

@@ -4,10 +4,6 @@ const Article = require('./model.js').Article
 const Comment = require('./model.js').Comment
 const connectionString = 'mongodb+srv://yc149:Lovelife098!@cluster0.hqe6q.mongodb.net/social?retryWrites=true&w=majority';
 
-let articles = [{id: 0, author: 'testUser', body: 'Post 1', date: new Date(), comments: ["comment1"]},
-    {id: 1, author: 'Jack', body: 'Post 2', date: new Date(), comments: ["comment1"]},
-    {id: 2, author: 'Zack', body: 'Post 3', date: new Date(), comments: ["comment1"]}];
-
 function isNumber(n) {
     return !isNaN(parseFloat(n)) && !isNaN(n - 0);
 }
@@ -16,10 +12,9 @@ const getArticles = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     console.log(req.username)
     if (req.params.id && !isNumber(req.params.id)) {
-        // console.log(req.username)
         Article.find({author: req.params.id}, function (err, articles) {
             if (articles === undefined || articles.length === 0) {
-                res.status(401).send("Article with this id is not found!");
+                res.status(401).send("Article not found!");
 
             } else {
                 res.status(200).send({"articles": articles})
@@ -28,8 +23,7 @@ const getArticles = (req, res) => {
     } else if (req.params.id && isNumber(req.params.id)) {
         Article.find({id: req.params.id}, function (err, articles) {
             if (articles === undefined || articles.length === 0) {
-                res.status(401).send("Article with this id is not found!");
-
+                res.status(401).send("Article not found!");
             } else {
                 res.status(200).send({"articles": articles})
             }
@@ -45,7 +39,6 @@ const getArticles = (req, res) => {
 
 const postArticles = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    // console.log(req.body.username);
     let postID;
     Article.find({}, function (err, articles) {
         postID = articles.length;
