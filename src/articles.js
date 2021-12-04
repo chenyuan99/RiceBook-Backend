@@ -14,8 +14,9 @@ function isNumber(n) {
 
 const getArticles = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+    console.log(req.username)
     if (req.params.id && !isNumber(req.params.id)) {
-        // console.log(req.params.id)
+        // console.log(req.username)
         Article.find({author: req.params.id}, function (err, articles) {
             if (articles === undefined || articles.length === 0) {
                 res.status(401).send("Article with this id is not found!");

@@ -53,6 +53,9 @@ const putHeadline = (req, res) => {
 const getEmail = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     const username = req.params.user
+    if(username === ""){
+        uusername = req.username;
+    }
     // console.log(username)
     Profiles.find({username: username}, function (err, profiles) {
         // console.log("finding...")

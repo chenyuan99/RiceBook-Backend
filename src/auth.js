@@ -15,6 +15,7 @@ const salt = Math.random() * 1000;
 const redis = require("redis");
 var cookieKey = 'sid'
 const fs = require("fs");
+const {request} = require("express");
 const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef129eb2e8451481b80e7f97698fb57@ec2-34-204-225-229.compute-1.amazonaws.com:31320", {
     tls: {
         rejectUnauthorized: false
@@ -177,13 +178,14 @@ passport.use(new GoogleStrategy({
             clientSecret: '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',
             callbackURL: "/auth/google/callback"
         },
-        function (accessToken, refreshToken, profile, done) {
+        function (req, accessToken, refreshToken, profile, done) {
             // let user = {
             //     'email': profile.emails[0].value,
             //     'name': profile.name.givenName + ' ' + profile.name.familyName,
             //     'id': profile.id,
             //     'token': accessToken
             // };
+            console.log(profile)
             // You can perform any necessary actions with your user at this point,
             // e.g. internal verification against a users table,
             // creating new user entries, etc.
@@ -195,74 +197,83 @@ passport.use(new GoogleStrategy({
             // });
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             const username = profile.name.givenName + "@" + "Google"
-            // const sid = req.cookies[cookieKey]
+            // const sid = request.cookies[cookieKey]
+            // console.log(request)
+            // console.lof(sid);
             // if (!sid) {
-                User.findOne({username: username}).exec(function (err, user) {
-                    if (!user || user.length == 0) {
-                        const userObj = new User({username: username, third_party_id: profile.id})
-                        new User(userObj).save(function (err, usr) {
-                            if (err) {
-                                return console.log(err)
-                            }
-                        })
-                        const profileObj = new Profiles({
-                            username: username,
-                            headline: "I am login in via Google",
-                            following: [],
-                            email: null,
-                            zipcode: null,
-                            dob: new Date(19990, 1, 1).getTime(),
-                            avatar: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-                        })
-                        new Profiles(profileObj).save(function (err, usr) {
-                            if (err) {
-                                return console.log(err)
-                            }
-                        })
-                    }
-                    return done(null, profile)
-                })
-            // } else {
-            //     redis.hgetall(sid, function (err, userObj) {
-            //             const cur_user = userObj.username
-            //             Article.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
-            //             })
-            //             Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
-            //                 new: true,
-            //                 multi: true
-            //             }, function () {
-            //             })
-            //             Comment.update({author: username}, {$set: {'author': cur_user}}, {new: true, multi: true}, function () {
-            //             })
-            //
-            //             Profiles.findOne({username: username}).exec(function (err, profiles) {
-            //                 if (profiles) {
-            //                     Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
-            //                         if (newProfile) {
-            //                             const newFollowings = newProfile.following.concat(profiles.following)
-            //                             Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
-            //                             })
-            //                         }
-            //                     })
-            //                     Profiles.update({username: username}, {$set: {'following': []}}, function () {
-            //                     })
-            //                 }
-            //             })
-            //             User.findOne({username: cur_user}).exec(function (err, user) {
-            //                 if (user) {
-            //                     let authObj = {}
-            //                     authObj[`Google`] = profile.name.givenName
-            //                     User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
-            //                     })
-            //                 }
-            //             })
-            //
-            //         }
-            //     )
+            User.findOne({username: username}).exec(function (err, user) {
+                if (!user || user.length == 0) {
+                    const userObj = new User({username: username, third_party_id: profile.id})
+                    new User(userObj).save(function (err, usr) {
+                        if (err) {
+                            return console.log(err)
+                        }
+                    })
+                    const profileObj = new Profiles({
+                        username: username,
+                        headline: "I am login in via Google",
+                        following: [],
+                        email: null,
+                        zipcode: null,
+                        dob: new Date(19990, 1, 1).getTime(),
+                        avatar: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+                    })
+                    new Profiles(profileObj).save(function (err, usr) {
+                        if (err) {
+                            return console.log(err)
+                        }
+                    })
+                }
+
                 return done(null, profile)
-            // }
-
-
+            })
+            //     } else {
+            //         redis.hgetall(sid, function (err, userObj) {
+            //                 const cur_user = userObj.username
+            //                 Article.update({author: username}, {$set: {'author': cur_user}}, {
+            //                     new: true,
+            //                     multi: true
+            //                 }, function () {
+            //                 })
+            //                 Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
+            //                     new: true,
+            //                     multi: true
+            //                 }, function () {
+            //                 })
+            //                 Comment.update({author: username}, {$set: {'author': cur_user}}, {
+            //                     new: true,
+            //                     multi: true
+            //                 }, function () {
+            //                 })
+            //
+            //                 Profiles.findOne({username: username}).exec(function (err, profiles) {
+            //                     if (profiles) {
+            //                         Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
+            //                             if (newProfile) {
+            //                                 const newFollowings = newProfile.following.concat(profiles.following)
+            //                                 Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
+            //                                 })
+            //                             }
+            //                         })
+            //                         Profiles.update({username: username}, {$set: {'following': []}}, function () {
+            //                         })
+            //                     }
+            //                 })
+            //                 User.findOne({username: cur_user}).exec(function (err, user) {
+            //                     if (user) {
+            //                         let authObj = {}
+            //                         authObj[`Google`] = profile.name.givenName
+            //                         User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
+            //                         })
+            //                     }
+            //                 })
+            //
+            //             }
+            //         )
+            //         return done(null, profile)
+            //     }
+            //
+            //
         })
 );
 
@@ -359,20 +370,71 @@ passport.deserializeUser(function (id, done) {
     })
 })
 
-
+// https://yc149-final-frontend.surge.sh
 module.exports = (app) => {
     app.use(cookieParser());
+    app.enable('trust proxy')
     app.use(cors({origin: ["http://localhost:4200", 'https://yc149-final-frontend.surge.sh/']}));
     app.get('/', index);
     app.post('/register', register);
     app.post('/login', login);
     app.use(passport.initialize());
     app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login']})); // could have a passport auth second arg {scope: 'email'}
+    // app.get('/auth/google/callback',
+    //     passport.authenticate('google', {
+    //         failureRedirect: '/'
+    //     }),
+    //     function (req, res) {
+    //         // Successful authentication, redirect success.
+    //         // const sid = req.cookies[cookieKey]
+    //         // console.log(req.user.name)
+    //         // const msg = {username: req.user.name.givenName+"@google", result: 'success'}
+    //         // res.send(msg)
+    //         console
+    //         req.username = req.user.name.givenName+"@google";
+    //         res.redirect("http://localhost:4200/main");
+    //
+    //     });
     app.get('/auth/google/callback',
         passport.authenticate('google', {
-            successRedirect: 'https://yc149-final-frontend.surge.sh/main',
             failureRedirect: '/'
-        }));
+        }), function (req, res) {
+            const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+            let obj = req.user
+            User.findOne({username: obj.name.givenName + "@google"}).exec(function (err, user) {
+                    if (user !== null) {
+                        let sid = md5(user.hash + user.salt);
+                        redis.hmset('sessions', sid, JSON.stringify(username), function (err, res) {
+                        })
+                        console.log("sid:"+sid);
+                        res.cookie(cookieKey, sid, {
+                            maxAge: 3600 * 1000,
+                            httpOnly: true,
+                            httpOnly: true,
+                            sameSite: 'none',
+                            secure: true
+                        });
+                        res.redirect('http://localhost:4200/main')
+
+                    } else {
+                        let sid = obj.token
+                        console.log("token login " + sid)
+                        client.hmset('sessions', sid, JSON.stringify(obj.name), function (err, res) {
+                        })
+                        res.cookie(cookieKey, sid, {
+                            maxAge: 3600 * 1000,
+                            httpOnly: true,
+                            httpOnly: true,
+                            sameSite: 'none',
+                            secure: true
+                        });
+                        res.redirect('http://localhost:4200/main')
+                    }
+                }
+            )
+        });
+
+
     app.use(isLoggedIn);
     app.put('/logout', logout);
     app.put('/password', putPassword);

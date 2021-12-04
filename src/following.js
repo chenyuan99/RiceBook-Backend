@@ -31,7 +31,10 @@ const putFollowing = (req, res) => {
 
 const getFollowing = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    const userid = req.params.user;
+    let userid = req.params.user;
+    if(userid === ""){
+        userid = req.username;
+    }
     Profiles.find({username: userid}, function (err, profiles) {
         if (profiles.length === 0) {
             res.status(400).send("User doesn't exist in database")
