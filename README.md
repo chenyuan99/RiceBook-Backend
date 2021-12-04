@@ -1,4 +1,4 @@
-1 slip day used
+2 slip day used
 
 "netid": "yc149",
 

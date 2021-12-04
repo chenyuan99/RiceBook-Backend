@@ -178,102 +178,104 @@ passport.use(new GoogleStrategy({
             clientSecret: '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',
             callbackURL: "/auth/google/callback"
         },
-        function (req, accessToken, refreshToken, profile, done) {
-            // let user = {
-            //     'email': profile.emails[0].value,
-            //     'name': profile.name.givenName + ' ' + profile.name.familyName,
-            //     'id': profile.id,
-            //     'token': accessToken
-            // };
-            console.log(profile)
-            // You can perform any necessary actions with your user at this point,
-            // e.g. internal verification against a users table,
-            // creating new user entries, etc.
+        function (accessToken, refreshToken, profile, done) {
+            let user = {
+                'email': null,
+                'name': profile.name.givenName + ' ' + profile.name.familyName,
+                'id': profile.id,
+                'token': accessToken
+            };
 
-            // return done(null, user);
-            // User.findOrCreate(..., function(err, user) {
-            //     if (err) { return done(err); }
-            //     done(null, user);
-            // });
-            const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-            const username = profile.name.givenName + "@" + "Google"
-            // const sid = request.cookies[cookieKey]
-            // console.log(request)
-            // console.lof(sid);
-            // if (!sid) {
-            User.findOne({username: username}).exec(function (err, user) {
-                if (!user || user.length == 0) {
-                    const userObj = new User({username: username, third_party_id: profile.id})
-                    new User(userObj).save(function (err, usr) {
-                        if (err) {
-                            return console.log(err)
-                        }
-                    })
-                    const profileObj = new Profiles({
-                        username: username,
-                        headline: "I am login in via Google",
-                        following: [],
-                        email: null,
-                        zipcode: null,
-                        dob: new Date(19990, 1, 1).getTime(),
-                        avatar: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
-                    })
-                    new Profiles(profileObj).save(function (err, usr) {
-                        if (err) {
-                            return console.log(err)
-                        }
-                    })
-                }
-
-                return done(null, profile)
-            })
-            //     } else {
-            //         redis.hgetall(sid, function (err, userObj) {
-            //                 const cur_user = userObj.username
-            //                 Article.update({author: username}, {$set: {'author': cur_user}}, {
-            //                     new: true,
-            //                     multi: true
-            //                 }, function () {
-            //                 })
-            //                 Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
-            //                     new: true,
-            //                     multi: true
-            //                 }, function () {
-            //                 })
-            //                 Comment.update({author: username}, {$set: {'author': cur_user}}, {
-            //                     new: true,
-            //                     multi: true
-            //                 }, function () {
-            //                 })
+            return done(null, user)
+            // console.log(profile)
+            // // You can perform any necessary actions with your user at this point,
+            // // e.g. internal verification against a users table,
+            // // creating new user entries, etc.
             //
-            //                 Profiles.findOne({username: username}).exec(function (err, profiles) {
-            //                     if (profiles) {
-            //                         Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
-            //                             if (newProfile) {
-            //                                 const newFollowings = newProfile.following.concat(profiles.following)
-            //                                 Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
-            //                                 })
-            //                             }
-            //                         })
-            //                         Profiles.update({username: username}, {$set: {'following': []}}, function () {
-            //                         })
-            //                     }
-            //                 })
-            //                 User.findOne({username: cur_user}).exec(function (err, user) {
-            //                     if (user) {
-            //                         let authObj = {}
-            //                         authObj[`Google`] = profile.name.givenName
-            //                         User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
-            //                         })
-            //                     }
-            //                 })
-            //
+            // // return done(null, user);
+            // // User.findOrCreate(..., function(err, user) {
+            // //     if (err) { return done(err); }
+            // //     done(null, user);
+            // // });
+            // const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
+            // const username = profile.name.givenName + "@" + "Google"
+            // // const sid = request.cookies[cookieKey]
+            // // console.log(request)
+            // // console.lof(sid);
+            // // if (!sid) {
+            // User.findOne({username: username}).exec(function (err, user) {
+            //     if (!user || user.length == 0) {
+            //         const userObj = new User({username: username, third_party_id: profile.id})
+            //         new User(userObj).save(function (err, usr) {
+            //             if (err) {
+            //                 return console.log(err)
             //             }
-            //         )
-            //         return done(null, profile)
+            //         })
+            //         const profileObj = new Profiles({
+            //             username: username,
+            //             headline: "I am login in via Google",
+            //             following: [],
+            //             email: null,
+            //             zipcode: null,
+            //             dob: new Date(19990, 1, 1).getTime(),
+            //             avatar: "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+            //         })
+            //         new Profiles(profileObj).save(function (err, usr) {
+            //             if (err) {
+            //                 return console.log(err)
+            //             }
+            //         })
             //     }
             //
-            //
+            //     return done(null, profile)
+            // })
+            // //     } else {
+            // //         redis.hgetall(sid, function (err, userObj) {
+            // //                 const cur_user = userObj.username
+            // //                 Article.update({author: username}, {$set: {'author': cur_user}}, {
+            // //                     new: true,
+            // //                     multi: true
+            // //                 }, function () {
+            // //                 })
+            // //                 Article.update({'comments.author': username}, {$set: {'comments.$.author': cur_user}}, {
+            // //                     new: true,
+            // //                     multi: true
+            // //                 }, function () {
+            // //                 })
+            // //                 Comment.update({author: username}, {$set: {'author': cur_user}}, {
+            // //                     new: true,
+            // //                     multi: true
+            // //                 }, function () {
+            // //                 })
+            // //
+            // //                 Profiles.findOne({username: username}).exec(function (err, profiles) {
+            // //                     if (profiles) {
+            // //                         Profiles.findOne({username: cur_user}).exec(function (err, newProfile) {
+            // //                             if (newProfile) {
+            // //                                 const newFollowings = newProfile.following.concat(profiles.following)
+            // //                                 Profiles.update({username: cur_user}, {$set: {'following': newFollowings}}, function () {
+            // //                                 })
+            // //                             }
+            // //                         })
+            // //                         Profiles.update({username: username}, {$set: {'following': []}}, function () {
+            // //                         })
+            // //                     }
+            // //                 })
+            // //                 User.findOne({username: cur_user}).exec(function (err, user) {
+            // //                     if (user) {
+            // //                         let authObj = {}
+            // //                         authObj[`Google`] = profile.name.givenName
+            // //                         User.updateMany({username: cur_user}, {$addToSet: {'auth': authObj}}, {new: true}, function () {
+            // //                         })
+            // //                     }
+            // //                 })
+            // //
+            // //             }
+            // //         )
+            // //         return done(null, profile)
+            // //     }
+            // //
+            // //
         })
 );
 
@@ -379,6 +381,7 @@ module.exports = (app) => {
     app.post('/register', register);
     app.post('/login', login);
     app.use(passport.initialize());
+    // app.use(passport.session());
     app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login']})); // could have a passport auth second arg {scope: 'email'}
     // app.get('/auth/google/callback',
     //     passport.authenticate('google', {
@@ -401,11 +404,10 @@ module.exports = (app) => {
         }), function (req, res) {
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             let obj = req.user
-            User.findOne({username: obj.name.givenName + "@google"}).exec(function (err, user) {
+            User.findOne({username: obj.name}).exec(function (err, user) {
                     if (user !== null) {
                         let sid = md5(user.hash + user.salt);
-                        redis.hmset('sessions', sid, JSON.stringify(username), function (err, res) {
-                        })
+                        client.hmset(sid, "username",JSON.stringify(username))
                         console.log("sid:"+sid);
                         res.cookie(cookieKey, sid, {
                             maxAge: 3600 * 1000,
@@ -419,8 +421,7 @@ module.exports = (app) => {
                     } else {
                         let sid = obj.token
                         console.log("token login " + sid)
-                        client.hmset('sessions', sid, JSON.stringify(obj.name), function (err, res) {
-                        })
+                        client.hmset(sid, "username",JSON.stringify(obj.name))
                         res.cookie(cookieKey, sid, {
                             maxAge: 3600 * 1000,
                             httpOnly: true,
