@@ -28,7 +28,7 @@ const base_url = "https://yc149-final-frontend.surge.sh";
 function isLoggedIn(req, res, next) {
     const sid = req.cookies[cookieKey]
     if (!sid) {
-        return res.sendStatus(401)
+        res.status(401).send('User session not exist')
     }
     client.hget(sid, "username", function (err, username) {
         if (username) {
@@ -50,12 +50,12 @@ function login(req, res) {
     }
     User.find({username: username}).exec(function (err, users) {
         if (users.length == 0) {
-            res.status(401).send("this username is not registered yet.")
+            res.status(401).send("username not registered")
             return
         }
         const userObj = users[0]
         if (userObj == null) {
-            res.status(401).send("Username is missing in the database")
+            res.status(401).send("Username missing")
         }
         const salt = userObj.salt
         const hash = userObj.hash
