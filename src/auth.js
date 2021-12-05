@@ -24,6 +24,7 @@ const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef
     }
 });
 const base_url = "https://yc149-final-frontend.surge.sh";
+// const base_url = "http://localhost:4200";
 function isLoggedIn(req, res, next) {
     const sid = req.cookies[cookieKey]
     if (!sid) {
@@ -65,7 +66,9 @@ function login(req, res) {
             const sessionKey = md5(mySecretMessage + new Date().getTime() + userObj.username)
             client.hmset(sessionKey, "username", username)
             res.cookie(cookieKey, sessionKey, {
-                maxAge: 3600 * 1000, httpOnly: true, sameSite: 'none',
+                maxAge: 3600 * 1000,
+                httpOnly: true,
+                sameSite: 'none',
                 secure: true
             })
             const msg = {username: username, result: 'success'}
@@ -181,7 +184,6 @@ passport.use(new GoogleStrategy({
         },
         function (accessToken, refreshToken, profile, done) {
             let user = {
-                // 'email': null,
                 'email': profile.emails[0].value,
                 'name': profile.name.givenName + ' ' + profile.name.familyName,
                 'givenName': profile.name.givenName,
@@ -192,10 +194,7 @@ passport.use(new GoogleStrategy({
             console.log(profile)
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             const username = profile.name.givenName + "@" + "Google"
-            // const sid = request.cookies[cookieKey]
             console.log(user)
-            // console.lof(sid);
-            // if (!sid) {
             User.findOne({username: username}).exec(function (err, user) {
                 if (!user || user.length === 0) {
                     const userObj = new User({username: username, third_party_id: profile.id})
@@ -326,7 +325,7 @@ function getGoogleStatus(req, res) {
         if (userObj == null) {
             res.status(401).send("Username is missing in the database")
         }
-        if (!userObj.auth) {
+        if (!userObj.auth[0]) {
             const msg = {username: username, google: 'No Google Account Linked'}
             console.log(msg)
             res.send(msg)
@@ -408,9 +407,9 @@ module.exports = (app) => {
                 }
             )
         });
-    app.get('/unlink/google', unlinkGoogle)
     app.use(isLoggedIn);
     app.post('/merge', link2gg)
+    app.get('/unlink/google', unlinkGoogle)
     app.get('/auth/google/status', getGoogleStatus);
     app.put('/logout', logout);
     app.put('/password', putPassword);
