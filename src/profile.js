@@ -6,7 +6,7 @@ const uploadImage = require('./uploadCloudinary')
 const getHeadline = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.params.user
-    console.log(username)
+    // console.log(username)
     if (username === "" || username === "undefined" || username === null) {
         username = req.username;
     }
@@ -50,9 +50,7 @@ const getEmail = (req, res) => {
     if (username === "") {
         uusername = req.username;
     }
-    // console.log(username)
     Profiles.find({username: username}, function (err, profiles) {
-        // console.log("finding...")
         if (profiles.length == 0) {
             res.status(400).send("User not found in the database")
             return
@@ -141,7 +139,7 @@ const getDob = (req, res) => {
 const getProfile = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.username;
-    console.log(username)
+    // console.log(username)
     Profiles.find({username: username}, function (err, profiles) {
         if (profiles.length === 0) {
             res.status(400).send("User not found in the database")
@@ -168,17 +166,12 @@ const getAvatar = (req, res) => {
     } else {
         users = [req.username];
     }
-
-
     Profiles.find({username: {$in: users}}).exec(function (err, profiles) {
         var avatars = []
-
         if (profiles.length == 0) {
             res.status(400).send("none user is supplied in the database")
             return
         }
-
-
         profiles.forEach(r => {
             avatars.push({
                 username: r.username,
@@ -194,7 +187,7 @@ const putAvatar = (req, res) => {
     const username = req.username
     const avatar = req.fileurl
     if (!avatar) {
-        res.status(400).send("You do not supply avatar!")
+        res.status(400).send("Avatar Missing")
     } else {
         Profiles.findOneAndUpdate({username}, {avatar}, {new: true}, (err, item) => {
             if (err) {
@@ -203,7 +196,7 @@ const putAvatar = (req, res) => {
                 if (item) {
                     res.status(200).send({username, avatar: item.avatar})
                 } else {
-                    res.status(404).send({result: 'No matched items!'})
+                    res.status(404).send({result: 'No match'})
                 }
             }
         })

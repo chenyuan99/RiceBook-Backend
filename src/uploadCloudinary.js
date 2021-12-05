@@ -1,6 +1,3 @@
-////////////////////////////////
-// Upload files to Cloudinary //
-////////////////////////////////
 const multer = require('multer')
 const stream = require('stream')
 const cloudinary = require('cloudinary')
@@ -13,7 +10,7 @@ cloudinary.config({
 });
 
 const doUpload = (publicName, req, res, next) => {
-    console.log("called")
+    // console.log("called")
     const uploadStream = cloudinary.uploader.upload_stream(result => {
         req.fileurl = result.url
         req.fileid = result.public_id
@@ -25,12 +22,8 @@ const doUpload = (publicName, req, res, next) => {
     s.on('end', uploadStream.end)
 }
 
-// multer parses multipart form data.  Here we tell
-// it to expect a single file upload named 'image'
-// Read this function carefully so you understand
-// what it is doing!
 const uploadImage = (publicName) => (req, res, next) => {
-    console.log("called upload")
+    // console.log("called upload")
     multer().single('text')(req, res, () => {
         if (!req.body.text) {
             req.text = null;
@@ -44,11 +37,11 @@ const uploadImage = (publicName) => (req, res, next) => {
 
     multer().single('image')(req, res, () => {
         if (req.file === undefined) {
-            console.log("undefined")
+            // console.log("undefined")
             req.file = null;
             next()
         } else {
-        console.log("image called")
+        // console.log("image called")
         doUpload(publicName, req, res, next)
         }
     })

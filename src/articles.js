@@ -15,7 +15,6 @@ const getArticles = (req, res) => {
         Article.find({author: req.params.id}, function (err, articles) {
             if (articles === undefined || articles.length === 0) {
                 res.status(401).send("Article not found!");
-
             } else {
                 res.status(200).send({"articles": articles})
             }
@@ -33,7 +32,6 @@ const getArticles = (req, res) => {
             res.status(200).send({articles: articles})
         })
     }
-
 }
 
 
@@ -121,28 +119,25 @@ const putArticles = (req, res) => {
                     {$set: {text: req.body.text}},
                     {new: true},
                     function (err, comments) {
-                        // if (err) {
-                        //     return console.log(err)
-                        // }
-                    })
+                        if (err) {
+                            console.log(err)
 
+                        }
+                    })
                 Article.updateMany(
                     {_id: req.params.id, 'comments.commentId': req.body.commentId},
                     {$set: {'comments.$.text': req.body.text}},
                     {new: true},
                     function (err, articles) {
-                        // if (err) {
-                        //     return console.log(err)
-                        // }
+                        if (err) {
+                            return console.log(err)
+                        }
                     })
-
                 Article.find({id: req.params.id}, function (err, articles) {
                     res.status(200).send({articles: articles})
                 })
-
             })
         }
-
     })
 }
 
