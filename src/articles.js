@@ -82,13 +82,10 @@ const putArticles = (req, res) => {
             Article.findOneAndUpdate(
                 {id: req.params.id},
                 {$push: {comments: newComment}},
-                { new: true},
+                {new: true},
                 function (err, articles) {
                     res.status(200).send({articles: articles});
                 })
-            // Article.find({id: req.params.id}).exec(function (err, articles) {
-            //     res.status(200).send({articles: articles});
-            // })
             return
         }
         if (!req.body.commentId) {

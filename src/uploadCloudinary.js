@@ -41,8 +41,8 @@ const uploadImage = (publicName) => (req, res, next) => {
             req.file = null;
             next()
         } else {
-        // console.log("image called")
-        doUpload(publicName, req, res, next)
+            // console.log("image called")
+            doUpload(publicName, req, res, next)
         }
     })
 }

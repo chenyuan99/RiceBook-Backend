@@ -32,7 +32,7 @@ const putFollowing = (req, res) => {
 const getFollowing = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let userid = req.params.user;
-    if(userid === ""){
+    if (userid === "") {
         userid = req.username;
     }
     Profiles.find({username: userid}, function (err, profiles) {
@@ -58,7 +58,7 @@ const deleteFollowing = (req, res) => {
         function (err, profile) {
             if (err) {
                 console.log(err)
-                return
+
             }
         })
     Profiles.find({username: username}, function (err, profiles) {

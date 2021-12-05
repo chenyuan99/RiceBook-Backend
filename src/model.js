@@ -34,7 +34,7 @@ const userSchema = new mongoose.Schema({
     },
     salt: String,
     hash: String,
-    third_party_id : String,
+    third_party_id: String,
     auth: []
 })
 
