@@ -80,14 +80,15 @@ const putArticles = (req, res) => {
             })
             new Comment(newComment).save()
             Article.findOneAndUpdate(
-                {id:req.params.id},
+                {id: req.params.id},
                 {$push: {comments: newComment}},
                 {upsert: true, new: true},
                 function (err, articles) {
+                    res.status(200).send({articles: articles});
                 })
-            Article.find({id: req.params.id}).exec(function (err, articles) {
-                res.status(200).send({articles: articles});
-            })
+            // Article.find({id: req.params.id}).exec(function (err, articles) {
+            //     res.status(200).send({articles: articles});
+            // })
             return
         }
         if (!req.body.commentId) {
@@ -96,7 +97,7 @@ const putArticles = (req, res) => {
                 return
             }
             Article.findOneAndUpdate(
-                {id:req.params.id},
+                {id: req.params.id},
                 {$set: {text: req.body.text}},
                 {new: true},
                 function (err, articles) {
