@@ -56,9 +56,10 @@ const deleteFollowing = (req, res) => {
         {$pull: {following: userid}},
         {new: true},
         function (err, profile) {
-            // if (err) {
-            //     return console.log(err)
-            // }
+            if (err) {
+                console.log(err)
+                return
+            }
         })
     Profiles.find({username: username}, function (err, profiles) {
         res.status(200).send({username: username, following: profiles[0].following})
