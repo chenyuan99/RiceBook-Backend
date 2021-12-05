@@ -24,20 +24,22 @@ const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef
     }
 });
 const base_url = "https://yc149-final-frontend.surge.sh";
+
 // const base_url = "http://localhost:4200";
 function isLoggedIn(req, res, next) {
     const sid = req.cookies[cookieKey]
     if (!sid) {
         res.status(401).send('User session not exist')
+    } else {
+        client.hget(sid, "username", function (err, username) {
+            if (username) {
+                req.username = username
+                next()
+            } else {
+                res.status(401).send('User session not exist')
+            }
+        })
     }
-    client.hget(sid, "username", function (err, username) {
-        if (username) {
-            req.username = username
-            next()
-        } else {
-            res.status(401).send('User session not exist')
-        }
-    })
 }
 
 function login(req, res) {
@@ -249,14 +251,20 @@ const link2gg = (req, res) => {
         }
 
         if (isAuthorized(req, userObj)) {
-            Article.updateMany({author: req.username}, {$set: {'author': username}}, {new: true, multi: true}, function () {
+            Article.updateMany({author: req.username}, {$set: {'author': username}}, {
+                new: true,
+                multi: true
+            }, function () {
             })
             Article.updateMany({'comments.author': req.username}, {$set: {'comments.$.author': username}}, {
                 new: true,
                 multi: true
             }, function () {
             })
-            Comment.updateMany({author: req.username}, {$set: {'author': username}}, {new: true, multi: true}, function () {
+            Comment.updateMany({author: req.username}, {$set: {'author': username}}, {
+                new: true,
+                multi: true
+            }, function () {
             })
             Profiles.findOne({username: req.username}).exec(function (err, profile) {
                 if (profile) {
@@ -347,7 +355,7 @@ module.exports = (app) => {
     app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'email']})); // could have a passport auth second arg {scope: 'email'}
     app.get('/auth/google/callback',
         passport.authenticate('google', {
-            failureRedirect: base_url+'/auth'
+            failureRedirect: base_url + '/auth'
         }), function (req, res) {
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             let obj = req.user
@@ -370,7 +378,7 @@ module.exports = (app) => {
                                 function (err, profile) {
                                     res.status(200).send("password successfully changed")
                                 })
-                            res.redirect(base_url+'/main')
+                            res.redirect(base_url + '/main')
                         } else {
                             res.status(401).send('User session not exist');
                         }
@@ -390,7 +398,7 @@ module.exports = (app) => {
                             sameSite: 'none',
                             secure: true
                         });
-                        res.redirect(base_url+'/main')
+                        res.redirect(base_url + '/main')
                     } else {
                         let sid = obj.third_party_id
                         console.log("token login " + sid)
@@ -401,7 +409,7 @@ module.exports = (app) => {
                             sameSite: 'none',
                             secure: true
                         });
-                        res.redirect(base_url+'/main')
+                        res.redirect(base_url + '/main')
                     }
                 }
             )
