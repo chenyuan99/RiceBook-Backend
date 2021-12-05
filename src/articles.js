@@ -95,8 +95,8 @@ const putArticles = (req, res) => {
                 res.status(401).send("not own articles")
                 return
             }
-            Article.findByIdAndUpdate(
-                req.params.id,
+            Article.findOneAndUpdate(
+                {id:req.params.id},
                 {$set: {text: req.body.text}},
                 {new: true},
                 function (err, articles) {
