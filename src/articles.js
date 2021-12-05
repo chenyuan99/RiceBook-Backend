@@ -79,10 +79,10 @@ const putArticles = (req, res) => {
                 text: req.body.text
             })
             new Comment(newComment).save()
-            Article.findByIdAndUpdate(
-                 req.params.id,
+            Article.findOneAndUpdate(
+                {id: req.params.id},
                 {$push: {comments: newComment}},
-                {new: true},
+                { new: true},
                 function (err, articles) {
                     res.status(200).send({articles: articles});
                 })
