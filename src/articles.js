@@ -81,7 +81,7 @@ const putArticles = (req, res) => {
             new Comment(newComment).save()
             Article.findOneAndUpdate(
                 {id:req.params.id},
-                {$addToSet: {comments: newComment}},
+                {$addToSet: {comments: commentid}},
                 {upsert: true, new: true},
                 function (err, articles) {
                 })
