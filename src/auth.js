@@ -190,7 +190,6 @@ passport.use(new GoogleStrategy({
                 'id': profile.id,
                 'token': accessToken
             };
-
             console.log(profile)
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             const username = profile.name.givenName + "@" + "Google"
