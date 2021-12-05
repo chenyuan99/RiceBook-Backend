@@ -79,8 +79,8 @@ const putArticles = (req, res) => {
                 text: req.body.text
             })
             new Comment(newComment).save()
-            Article.findByIdAndUpdate(
-                req.params.id,
+            Article.findOneAndUpdate(
+                {id:req.params.id},
                 {$addToSet: {comments: newComment}},
                 {upsert: true, new: true},
                 function (err, articles) {
