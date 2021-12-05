@@ -15,7 +15,7 @@ const connectionString = 'mongodb+srv://yc149:Lovelife098!@cluster0.hqe6q.mongod
 const mySecretMessage = "test yc149"
 const salt = Math.random() * 1000;
 const redis = require("redis");
-var cookieKey = 'sid'
+let cookieKey = 'sid'
 const fs = require("fs");
 const {request} = require("express");
 const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef129eb2e8451481b80e7f97698fb57@ec2-34-204-225-229.compute-1.amazonaws.com:31320", {
@@ -42,8 +42,8 @@ function isLoggedIn(req, res, next) {
 
 function login(req, res) {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    var username = req.body.username
-    var password = req.body.password
+    let username = req.body.username
+    let password = req.body.password
     if (!username || !password) {
         res.status(400).send("Missing input username or password")
         return
@@ -242,10 +242,10 @@ const link2gg = (req, res) => {
         }
 
         function isAuthorized(req, userObj) {
-            var salt = userObj.salt;
-            var password = req.body.password;
-            var hash = userObj.hash;
-            var new_hash = md5(password + salt)
+            let salt = userObj.salt;
+            let password = req.body.password;
+            let hash = userObj.hash;
+            let new_hash = md5(password + salt)
             return hash == new_hash
         }
 
@@ -314,7 +314,7 @@ passport.deserializeUser(function (id, done) {
 
 function getGoogleStatus(req, res) {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
-    var username = req.username
+    let username = req.username
     User.find({username: username}).exec(function (err, users) {
         if (users.length == 0) {
             res.status(401).send("this username is not registered yet.")
