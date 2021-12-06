@@ -90,7 +90,7 @@ const putArticles = (req, res) => {
         }
         if (!req.body.commentId) {
             if (articles[0].author !== req.username) {
-                res.status(401).send("not own articles")
+                res.status(401).send("You are not author")
                 return
             }
             Article.findOneAndUpdate(
@@ -118,7 +118,7 @@ const putArticles = (req, res) => {
                     {new: true},
                     function (err, comments) {
                         if (err) {
-                            console.log(err)
+                            // console.log(err)
 
                         }
                     })
@@ -128,7 +128,7 @@ const putArticles = (req, res) => {
                     {new: true},
                     function (err, articles) {
                         if (err) {
-                            return console.log(err)
+                            // return console.log(err)
                         }
                     })
                 Article.find({id: req.params.id}, function (err, articles) {

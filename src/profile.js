@@ -6,7 +6,6 @@ const uploadImage = require('./uploadCloudinary')
 const getHeadline = (req, res) => {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.params.user
-    // console.log(username)
     if (username === "" || username === "undefined" || username === null) {
         username = req.username;
     }

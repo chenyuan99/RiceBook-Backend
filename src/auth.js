@@ -51,18 +51,18 @@ function login(req, res) {
         return
     }
     User.find({username: username}).exec(function (err, users) {
-        if (users.length == 0) {
+        if (users.length === 0) {
             res.status(401).send("username not registered")
             return
         }
         const userObj = users[0]
-        if (userObj == null) {
+        if (userObj === null) {
             res.status(401).send("Username missing")
         }
         const salt = userObj.salt
         const hash = userObj.hash
         const newhash = md5(password + salt)
-        if (newhash != hash) {
+        if (newhash !== hash) {
             res.status(401).send("Password is wrong!")
         } else {
             const sessionKey = md5(mySecretMessage + new Date().getTime() + userObj.username)
@@ -125,7 +125,7 @@ function logout(req, res) {
 const putPassword = (req, res) => {
     const newPassword = req.body.password
     const username = req.username
-    if (newPassword == null) {
+    if (newPassword === null) {
         res.status(400).send("Password  missing")
         return
     }
@@ -229,25 +229,22 @@ const link2gg = (req, res) => {
     const password = req.body.password;
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     if (!username || !password) {
-        return res.status(400).send("missing username or password")
+        return res.status(400).send("username or password missing")
     }
-
     User.find({username: username}).exec(function (err, users) {
-        if (!users || users.length == 0) {
+        if (!users || users.length === 0) {
             return res.sendStatus(400).send({result: 'User does not exist in database'})
         }
-
         const userObj = users[0]
         if (!userObj) {
             res.status(400).send("User does not exist in database")
         }
-
         function isAuthorized(req, userObj) {
             let salt = userObj.salt;
             let password = req.body.password;
             let hash = userObj.hash;
             let new_hash = md5(password + salt)
-            return hash == new_hash
+            return hash === new_hash
         }
 
         if (isAuthorized(req, userObj)) {
@@ -300,7 +297,7 @@ const unlinkGoogle = (req, res) => {
     User.findOne({username: username}).exec(function (err, user) {
         if (user.auth.length !== 0) {
             User.updateMany({username: username}, {$set: {auth: []}}, {new: true}, function () {
-                res.status(200).send({result: 'unlink successfully'})
+                res.status(200).send({result: 'unlink success'})
             })
         } else {
             res.status(400).send("No account linkied")
@@ -323,14 +320,14 @@ function getGoogleStatus(req, res) {
     const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
     let username = req.username
     User.find({username: username}).exec(function (err, users) {
-        if (users.length == 0) {
-            res.status(401).send("this username is not registered yet.")
+        if (users.length === 0) {
+            res.status(401).send("username not registered")
             return
         }
         const userObj = users[0]
         console.log(userObj)
-        if (userObj == null) {
-            res.status(401).send("Username is missing in the database")
+        if (userObj === null) {
+            res.status(401).send("Username missing")
         }
         if (!userObj.auth[0]) {
             const msg = {username: username, google: 'No Google Account Linked'}
@@ -385,8 +382,6 @@ module.exports = (app) => {
                     }
                 )
             }
-
-
             User.findOne({username: obj.givenName + "@Google"}).exec(function (err, user) {
                     if (user !== null) {
                         let sid = md5(user.hash + user.salt);
