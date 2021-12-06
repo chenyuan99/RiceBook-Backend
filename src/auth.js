@@ -239,6 +239,7 @@ const link2gg = (req, res) => {
         if (!userObj) {
             res.status(400).send("User does not exist in database")
         }
+
         function isAuthorized(req, userObj) {
             let salt = userObj.salt;
             let password = req.body.password;
@@ -349,7 +350,9 @@ module.exports = (app) => {
     app.post('/register', register);
     app.post('/login', login);
     app.use(passport.initialize());
-    app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'email']})); // could have a passport auth second arg {scope: 'email'}
+    app.get('/auth/google', passport.authenticate('google', {
+        scope: ['https://www.googleapis.com/auth/plus.login', 'email']
+    })); // could have a passport auth second arg {scope: 'email'}
     app.get('/auth/google/callback',
         passport.authenticate('google', {
             failureRedirect: 'https://yc149-final-backend.herokuapp.com/auth/google'
