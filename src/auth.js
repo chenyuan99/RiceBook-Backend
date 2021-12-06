@@ -355,7 +355,7 @@ module.exports = (app) => {
     app.get('/auth/google', passport.authenticate('google', {scope: ['https://www.googleapis.com/auth/plus.login', 'email']})); // could have a passport auth second arg {scope: 'email'}
     app.get('/auth/google/callback',
         passport.authenticate('google', {
-            failureRedirect: 'http://localhost:3000/auth/google'
+            failureRedirect: 'https://yc149-final-backend.herokuapp.com/auth/google'
         }), function (req, res) {
             const connector = mongoose.connect(connectionString, {useNewUrlParser: true, useUnifiedTopology: true});
             let obj = req.user
