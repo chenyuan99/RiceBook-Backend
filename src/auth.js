@@ -18,7 +18,7 @@ const redis = require("redis");
 let cookieKey = 'sid'
 const fs = require("fs");
 const {request} = require("express");
-const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef129eb2e8451481b80e7f97698fb57@ec2-34-204-225-229.compute-1.amazonaws.com:31320", {
+const client = redis.createClient("redis://:pecb97496a2e8074497b485fda26cbdd6aef129eb2e8451481b80e7f97698fb57@ec2-44-199-125-244.compute-1.amazonaws.com:8850", {
     tls: {
         rejectUnauthorized: false
     }
